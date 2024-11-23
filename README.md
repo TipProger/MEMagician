@@ -12,11 +12,11 @@
 1. Убедитесь, что у вас установлен Python версии 3.6 или выше.
 2. Склонируйте репозиторий:
    ```bash
-   git clone https://github.com/ваш_репозиторий.git
+   git clone https://github.com/TipProger/MEMagician.git
    ```
 3. Перейдите в директорию проекта:
    ```bash
-   cd ваш_репозиторий
+   cd MEMagician
    ```
 4. Установите необходимые зависимости:
    ```bash
@@ -24,7 +24,7 @@
    ```
 5. Запустите приложение:
    ```bash
-   python main.py
+   python Interface.py
    ```
 
 ## Используемые технологии
