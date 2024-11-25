@@ -1,10 +1,12 @@
 import PyQt5
 from Editor import AudioEditor
 from Recorder import AudioRecorder
+from Player import AudioPlayer
 from PyQt5.QtWidgets import (QApplication, QMainWindow, QPushButton, QVBoxLayout, QWidget,
                              QStackedWidget, QFileDialog, QSlider, QLabel, QHBoxLayout)
 from PyQt5.QtCore import Qt
-from PyQtWidgets.RedactTab import RedactTabUi
+from PyQtWidgets.RedactTab import Ui_RedactTabWidget
+from PyQtWidgets.DoubleSlider import RangeSlider
 import sys
 import os
 
@@ -17,7 +19,7 @@ class MainWindow(QMainWindow):
         self.stacked_widget = QStackedWidget(self)
         self.init_menu()
         self.record_tab()
-        #self.redact_tab()
+        self.redact_tab()
         self.setCentralWidget(self.stacked_widget)
 
     def init_menu(self):
@@ -85,65 +87,30 @@ class MainWindow(QMainWindow):
         print(message)  # Выводим сообщение в консоль (можно заменить на обновление метки)
 
     def redact_tab(self):
+        #Создаем основной виджет вкладки и экземпляр UI
         redact_tab_widget = QWidget()
-        redact_tab_ui = RedactTabUi()
-        redact_tab_ui.setupUi(redact_tab_widget)
+        redact_tab_widget_ui = Ui_RedactTabWidget()
+        # Установка UI на виджет
+        redact_tab_widget_ui.setupUi(redact_tab_widget)
 
+        #Дополняем дизайн вкладки и устанавливаем функционал
         #Кнопка для возвращения в меню
         exit_button = QPushButton('Вернуться в меню')
         exit_button.clicked.connect(lambda: self.stacked_widget.setCurrentIndex(0))
-        redact_tab_widget.mainLayout.addWidget(exit_button)
+        redact_tab_widget_ui.mainLayout.addWidget(exit_button)
 
-        # Добавление виджета для выбора аудио-файла
-        self.file_label = QLabel("Выберите аудио-файл:")
-        self.file_button = QPushButton("Выбрать файл")
-        self.file_button.clicked.connect(self.select_audio_file)
-        file_layout = QHBoxLayout()
-        file_layout.addWidget(self.file_label)
-        file_layout.addWidget(self.file_button)
-        file_group = QWidget()
-        file_group.setFixedHeight(100)
-        file_group.setFixedWidth(400)
-        file_group.setLayout(file_layout)
-        layout.addWidget(file_group)
-        self.audio_file = None
-        self.temp_audio_file = None
+        # Функция виджета для выбора аудио-файла
+        redact_tab_widget_ui.SelecFileButton.clicked.connect(self.select_audio_file)
 
         # Добавление ползунка для регулировки громкости
-        self.volume_slider = QSlider(Qt.Horizontal)
-        self.volume_slider.setMinimum(-100)
-        self.volume_slider.setMaximum(100)
-        self.volume_slider.setValue(0)
-        self.volume_slider.valueChanged.connect(lambda: self.volume_value_label.setText(f'{self.volume_slider.value()} дБ'))
-
-        self.volume_label = QLabel("Громкость (дБ)")
-        self.volume_value_label = QLabel("0 дБ")  # Динамический лейбл для отображения текущего значения
-        self.volume_min_label = QLabel("-100 дБ")
-        self.volume_max_label = QLabel("+100 дБ")
-        self.volume_layout = QHBoxLayout()
-        self.volume_layout.addWidget(self.volume_min_label)
-        self.volume_layout.addWidget(self.volume_slider)
-        self.volume_layout.addWidget(self.volume_max_label)
-        self.volume_widget = QWidget()
-        self.volume_widget.setLayout(self.volume_layout)
-
-        volume_group_layout = QVBoxLayout()
-        volume_group_layout.addWidget(self.volume_label)
-        volume_group_layout.addWidget(self.volume_value_label)
-        volume_group_layout.addWidget(self.volume_widget)
-        volume_group_widget = QWidget()
-        volume_group_widget.setLayout(volume_group_layout)
-        volume_group_widget.setFixedHeight(100)
-        volume_group_widget.setFixedWidth(400)  # Установите желаемую ширину
-
-        layout.addWidget(volume_group_widget)
+        redact_tab_widget_ui.horizontalSlider.valueChanged.connect(lambda: redact_tab_widget_ui.SliderVolumeChange.setText(f'{redact_tab_widget_ui.horizontalSlider.value()} дБ'))
 
         # Добавление двойного ползунка для обрезания аудио дорожки
-        # Надо добавить
+        range_slider = RangeSlider()
+        range_slider.setRange(0, 0)
 
         #Закрепление виджетов и вкладки
-        tab_widget.setLayout(layout)
-        self.stacked_widget.addWidget(tab_widget)
+        self.stacked_widget.addWidget(redact_tab_widget)
 
     def select_audio_file(self):
         file_dialog = QFileDialog()
